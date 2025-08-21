@@ -75,22 +75,21 @@ int main(int argc, char *argv[]){
 	
 	if ((numOfSols == 0) || (numOfSols > 20))
 		numOfSols = 20;
-	// if the PDB structure is known it is saved as the first solution
+	
 	double ***allSolutions = alloc_3Darray_lf(numOfSols + 1, n, 3); // 1-based array in the fist dimension
 	
-	int referenceSolutionIndex = 1;
+	// if the PDB structure is known it is saved as the first solution
 	if (initialStructureFile != NULL) {
-		referenceSolutionIndex = 0;
 		double **X0 = file_2_mat_lf(initialStructureFile, ' ');
 
 		// Save X0 in allSolutions[0]
 		mat_e_mat_lf(allSolutions[0], X0, n, 3);
 
 		// Build the output file path
-		snprintf(filepath, sizeof(filepath), "%s/%s_0.pdb", outputFolder, structure_id);
+		snprintf(filepath, sizeof(filepath), "%s/%s_%s.pdb", outputFolder, structure_id, structure_chain);
 
-		// Save the first solution as a PDB file
-		save_protein_all_models_PDBformat("PDB", protein, n, allSolutions, 1, structure_id, structure_chain, filepath, 1);
+		// Save a pdb file with the given pdb protein chain
+		save_given_protein_PDBformat(protein, n, X0, structure_id, structure_chain, filepath);
 		// Free the matrix read from file
 		dealloc_mat_lf(X0, n);
 	}
@@ -128,20 +127,19 @@ int main(int argc, char *argv[]){
 	free(cliquesFile);
 	
 	if (strcmp(method, "ibp") == 0) {
-		printf("****************** iBP: %s (%s)\n ******************\n",  ibp_version(),  ibp_release_date());
-    printf("  iTBP : %s (%s)\n", itbp_version(), itbp_release_date());
-		iBP(n, discretizationEdges_2, pruneEdges_2, sampleSize, distanceResolution, angularResolution, timeLimit, numOfSols, &runMetrics, distanceConstraints, m, allSolutions, solutionDifferenceThreshold, referenceSolutionIndex);
+		printf("****************** iBP version %s (%s) ******************\n",  ibp_version(),  ibp_release_date());
+		iBP(n, discretizationEdges_2, pruneEdges_2, sampleSize, distanceResolution, angularResolution, timeLimit, numOfSols, &runMetrics, distanceConstraints, m, allSolutions, solutionDifferenceThreshold);
 	}
 	else if (strcmp(method, "iabp") == 0) {
-		printf("****************** iABP: %s (%s)\n ******************\n",  itbp_version(),  itbp_release_date());
+		printf("****************** iABP version %s (%s) ******************\n",  itbp_version(),  itbp_release_date());
 		// In iABP, all torsion signs are assumed to be zero
 		free(tauSign);
 		tauSign = zeros_vec_d(n);
-		iTBP(n, discretizationEdges_2, pruneEdges_2, sampleSize, angularResolution, timeLimit, numOfSols, tauSign, givenTau, givenTauDeviation, &runMetrics, distanceConstraints, m, allSolutions, solutionDifferenceThreshold, referenceSolutionIndex);
+		iTBP(n, discretizationEdges_2, pruneEdges_2, sampleSize, angularResolution, timeLimit, numOfSols, tauSign, givenTau, givenTauDeviation, &runMetrics, distanceConstraints, m, allSolutions, solutionDifferenceThreshold);
 	}
 	else if (strcmp(method, "itbp") == 0) {
-		printf("****************** iTBP: %s (%s)\n ******************\n",  itbp_version(),  itbp_release_date());
-		iTBP(n, discretizationEdges_2, pruneEdges_2, sampleSize, angularResolution, timeLimit, numOfSols, tauSign, givenTau, givenTauDeviation, &runMetrics, distanceConstraints, m, allSolutions, solutionDifferenceThreshold, referenceSolutionIndex);
+		printf("****************** iTBP version %s (%s) ******************\n",  itbp_version(),  itbp_release_date());
+		iTBP(n, discretizationEdges_2, pruneEdges_2, sampleSize, angularResolution, timeLimit, numOfSols, tauSign, givenTau, givenTauDeviation, &runMetrics, distanceConstraints, m, allSolutions, solutionDifferenceThreshold);
 	}
 	else {
 		printf("ERROR: The selected method is invalid -- expected 'ibp', 'iabp', or 'itbp'.\n");
@@ -167,7 +165,7 @@ int main(int argc, char *argv[]){
 		fprintf(fp, "minimum RMSD = %.8lf\n", runMetrics.minRMSD);
 		
 		snprintf(filepath, sizeof(filepath), "%s/%s.pdb", outputFolder, structure_id);
-		save_protein_all_models_PDBformat(method, protein, n, allSolutions, runMetrics.nocs + 1, structure_id, structure_chain, filepath, 0);
+		save_protein_all_models_PDBformat(method, protein, n, allSolutions, runMetrics.nocs, structure_id, structure_chain, filepath);
 	}
 	else {
 		fprintf(fp, "maximum MDE = ---\n");

@@ -11,6 +11,7 @@
 #include "adt/ADT_DDGP.h"
 #include "algorithms/common.h"
 #define PI 3.14159265359
+#define MYZERO 0.000001
 
 /* *********************************************************************************** */
 /**
@@ -71,7 +72,6 @@ void referential_x1_x2_x3(double **X, double ***discretizationEdges_2) {
  * @param allSolutions			3D matrix storing all solutions found so far.
  * @param distanceConstraints		Distance constraints matrix.
  * @param num_dc			Number of distance constraints.
- * @param referenceSolutionIndex	Index of the reference solution.
  * @param solutionDifferenceThreshold	Threshold to consider solutions distinct.
  * @param i				Pointer to the current vertex index in the exploration.
  * @param exploredVertex		Array tracking explored vertices.
@@ -80,7 +80,7 @@ void referential_x1_x2_x3(double **X, double ***discretizationEdges_2) {
  * @param twoSampleSize			Maximum number of branches per vertex.
  * @return 1 if the search should stop, 0 otherwise.
  */
-int handle_solution_cycle(const char *method, long int *nosf, double *maxMDE, double *maxLDE, double *minRMSD, int *nocs, int GivenNumOfSols, double **Xr, int n, double ***allSolutions, double **distanceConstraints, int num_dc, int referenceSolutionIndex, double solutionDifferenceThreshold, int *i, int *exploredVertex, double **branches, int *branchNum, int twoSampleSize) {
+int handle_solution_cycle(const char *method, long int *nosf, double *maxMDE, double *maxLDE, double *minRMSD, int *nocs, int GivenNumOfSols, double **Xr, int n, double ***allSolutions, double **distanceConstraints, int num_dc, double solutionDifferenceThreshold, int *i, int *exploredVertex, double **branches, int *branchNum, int twoSampleSize) {
 	
 	int k;
 	double mde, lde, rmsd;
@@ -89,12 +89,14 @@ int handle_solution_cycle(const char *method, long int *nosf, double *maxMDE, do
 	
 	// First solution: store directly
 	if ((*nosf) == 1) {
+		if(frobenius_norm(allSolutions[0], n, 3) < MYZERO)
+			mat_e_mat_lf(allSolutions[0], Xr, n, 3);
+			
 		mat_e_mat_lf(allSolutions[++(*nocs)], Xr, n, 3);
-		rmsd = (*minRMSD);
 	}
-	else
-		// Compute RMSD from reference solution
-		rmsd = compute_rmsd(allSolutions[referenceSolutionIndex], Xr, n);
+	
+	// Compute RMSD from reference solution
+	rmsd = compute_rmsd(allSolutions[0], Xr, n);
 	
 	// Update max/min metrics
 	compute_mde_and_lde(Xr, distanceConstraints, num_dc, &mde, &lde);
@@ -104,7 +106,7 @@ int handle_solution_cycle(const char *method, long int *nosf, double *maxMDE, do
 	
 	// Test if candidate is sufficiently distinct
 	int isDistinct = 1;
-	for (k = 1; k < (*nocs); k++) {
+	for (k = 1; k <= (*nocs); k++) {
 		rmsd = compute_rmsd(allSolutions[k], Xr, n);
 		if (rmsd < solutionDifferenceThreshold) {
 			isDistinct = 0;

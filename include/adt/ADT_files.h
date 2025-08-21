@@ -13,4 +13,7 @@ void read_input_file(const char *filename, char **structure_id, char **structure
 /* *********************************************************************************** */
 void save_protein_model_PDBformat(const char filename[], proteinstructure *protein, int n, const char model[], const char structure_chain[]);
 /* *********************************************************************************** */
-void save_protein_all_models_PDBformat(const char method[], proteinstructure *protein, int n, double ***X, int numSols, const char structure_id[], const char structure_chain[], const char filename[], int is_x0);
+void save_given_protein_PDBformat(proteinstructure *protein, int n, double **X, const char structure_id[], const char structure_chain[], const char filename[]);
+/* *********************************************************************************** */
+void save_protein_all_models_PDBformat(const char method[], proteinstructure *protein, int n, double ***X, int numSols, const char structure_id[], const char structure_chain[], const char filename[]);
+/* *********************************************************************************** */

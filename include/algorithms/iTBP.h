@@ -16,5 +16,5 @@ int compute_tauiik_interval(double **X, double *pruneEdges_2, double lambda_210,
 /* *********************************************************************************** */
 void compute_tauiik_precise(double **X, double *pruneEdges_2, double lambda_210, double rho2_210, double lambda_213, double rho2_213, double di1i2, int i3, int i2, int i1, type_matrix_interval *tauiik);
 /* *********************************************************************************** */
-void iTBP(int n, double ***discretizationEdges_2, prune_edges_set *pruneEdges_2, int sampleSize, double angularResolution, double timeLimit, int GivenNumOfSols, int *signTau, double *givenTau, double *givenTauDeviation, run_metrics *runMetrics, double **distanceConstraints, int num_dc, double ***allSolutions, double solutionDifferenceThreshold, int referenceSolutionIndex);
+void iTBP(int n, double ***discretizationEdges_2, prune_edges_set *pruneEdges_2, int sampleSize, double angularResolution, double timeLimit, int GivenNumOfSols, int *signTau, double *givenTau, double *givenTauDeviation, run_metrics *runMetrics, double **distanceConstraints, int num_dc, double ***allSolutions, double solutionDifferenceThreshold);
 /* *********************************************************************************** */

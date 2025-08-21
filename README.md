@@ -79,7 +79,7 @@ distance constraints file: dataset/I_1TOS_model1_chainA_ddgpHCorder9.dat
 cliques and given torsion angles file: dataset/T_1TOS_model1_chainA_ddgpHCorder9.dat
 reference structure xyz file: dataset/X_1TOS_model1_chainA_ddgpHCorder9.dat
 time limit (days-hours:minutes:seconds): 0-12:00:00
-distance resolution (in Ångströms): 0.01
+largest admissible distance deviation (in Ångströms): 0.01
 angular resolution (in degrees): 5.00
 number of solutions (set to 0 for all solutions): 25
 sample size: 5
@@ -93,7 +93,8 @@ RMSD threshold to consider solutions different (in Ångströms): 3.0
 - **cliques file** (`T_*`): torsional cliques and given torsion angles  
 - **reference xyz file** (`X_*`): optional initial conformation in XYZ format  
 - **time limit**: maximum execution time  
-- **distance/angle resolution**: discretization precision  
+- **largest admissible distance deviation**: maximum allowed distance error (LDE)
+- **angle resolution**: discretization precision  
 - **number of solutions**: maximum number of conformations to generate  
 - **sample size**: random sampling parameter  
 - **RMSD threshold**: cutoff to consider solutions different  
@@ -146,7 +147,7 @@ XYZ coordinates of the reference conformation.
 
 The program writes results into the specified **output folder**:
 
-- **`<structure_id>_0.pdb`** → reference structure saved as the first model (if provided)  
+- **`<structure_id>_<structure_chain>.pdb`** → reference structure in PDB format (if provided)  
 - **`<structure_id>.pdb`** → all generated conformations in PDB format  
 - **`results.txt`** → run metrics, including:  
   - CPU time  
@@ -207,6 +208,13 @@ https://arxiv.org/abs/2508.09143
   url          = {https://arxiv.org/abs/2508.09143}
 }
 ```
+
+---
+
+## 📜 License
+
+This repository is licensed under the [MIT License](./LICENSE).  
+© 2025 Wagner Alan Aparecido da Rocha
 
 ---
 

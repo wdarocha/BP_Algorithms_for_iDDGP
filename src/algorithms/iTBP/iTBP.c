@@ -720,7 +720,7 @@ void compute_tauiik_precise(double **X, double *pruneEdges_2, double lambda_210,
 	change_referential_precise_case(tauiik, acos(cosTauiik), phi);
 }
 /* *********************************************************************************** */
-void iTBP(int n, double ***discretizationEdges_2, prune_edges_set *pruneEdges_2, int sampleSize, double angularResolution, double timeLimit, int GivenNumOfSols, int *signTau, double *givenTau, double *givenTauDeviation, run_metrics *runMetrics, double **distanceConstraints, int num_dc, double ***allSolutions, double solutionDifferenceThreshold, int referenceSolutionIndex) {
+void iTBP(int n, double ***discretizationEdges_2, prune_edges_set *pruneEdges_2, int sampleSize, double angularResolution, double timeLimit, int GivenNumOfSols, int *signTau, double *givenTau, double *givenTauDeviation, run_metrics *runMetrics, double **distanceConstraints, int num_dc, double ***allSolutions, double solutionDifferenceThreshold) {
 
 	// ---------- Variables initialization ----------
 	time_t startTime, nowWall;
@@ -780,11 +780,11 @@ void iTBP(int n, double ***discretizationEdges_2, prune_edges_set *pruneEdges_2,
 		}
 	
 		if (i == n) {
-			breakLoop = handle_solution_cycle(method, &nosf, &maxMDE, &maxLDE, &minRMSD, &nocs, GivenNumOfSols, Xr, n, allSolutions, distanceConstraints, num_dc, referenceSolutionIndex, solutionDifferenceThreshold, &i, exploredVertex, branches, branchNum, twoSampleSize);;
+			breakLoop = handle_solution_cycle(method, &nosf, &maxMDE, &maxLDE, &minRMSD, &nocs, GivenNumOfSols, Xr, n, allSolutions, distanceConstraints, num_dc, solutionDifferenceThreshold, &i, exploredVertex, branches, branchNum, twoSampleSize);
 			if(breakLoop)
 				break;
 		}
-		
+				
 		if(exploredVertex[i] == 0){
 			// Compute cos(tau_{i,i3})
 			if(signTau[i] == 0)

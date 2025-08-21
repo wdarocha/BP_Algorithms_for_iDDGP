@@ -144,7 +144,17 @@ else
 	LDFLAGS := -Wl,-Map,$(MAPFILE)
 endif
 
-LDLIBS ?= -llapacke -llapack -lblas -lm
+# ---------------- Scientific libs ----------------
+LAPACKE_LIBS := $(shell pkg-config --silence-errors --libs lapacke)
+
+ifeq ($(strip $(LAPACKE_LIBS)),)
+	LDLIBS  := -llapacke -llapack -lblas
+	LDFLAGS += -Wl,--no-as-needed
+else
+	LDLIBS  := $(LAPACKE_LIBS)
+endif
+
+MATHLIB := -lm
 
 # ---------------- Sources ----------------
 normaliz = sed 's|^\./||'
@@ -167,17 +177,12 @@ ECHO_LD = @echo "[ld] $@"
 .DEFAULT_GOAL := build
 
 .PHONY: build
-build: | dirs
-	@if [ -f $(BIN) ] && [ -f $(LIBALG) ] && [ -f $(LIBADT) ] && [ -f $(VER_HDR) ]; then \
-		echo "[build] everything is up to date."; \
-	elif $(MAKE) -n $(BIN) $(LIBALG) $(LIBADT) $(VER_HDR) 2>/dev/null | grep -q .; then \
-		echo "[build] building targets..."; \
-		$(MAKE) $(BIN); \
-		echo "[build] done: $(BIN)"; \
+build: $(BIN) $(LIBALG) $(LIBADT) $(VER_HDR)
+	@if [ -n "$$(find $^ -newer .build_stamp 2>/dev/null)" ]; then \
+		echo "[build] build updated."; \
+		touch .build_stamp; \
 	else \
-		echo "[build] missing artifacts, forcing rebuild..."; \
-		$(MAKE) $(BIN); \
-		echo "[build] done: $(BIN)"; \
+		echo "[build] everything is up to date."; \
 	fi
 
 # ---------------- Libraries ----------------
@@ -192,11 +197,7 @@ $(LIBALG): $(ALG_OBJS) | dirs
 # ---------------- Executable ----------------
 $(BIN): $(MAIN_OBJS) $(LIBALG) $(LIBADT) | dirs
 	$(ECHO_LD)
-	@$(CC) $(LDFLAGS) \
-	$(MAIN_OBJS) \
-	-Wl,--start-group $(LIBALG) $(LIBADT) -Wl,--end-group \
-	$(LDLIBS) \
-	-o $@
+	@$(CC) $(LDFLAGS) $(MAIN_OBJS) -Wl,--start-group $(LIBALG) $(LIBADT) $(LDLIBS) -Wl,--end-group $(MATHLIB) -o $@
 	@echo "[ok] linked $(BIN)"
 
 # ---------------- Compile ----------------

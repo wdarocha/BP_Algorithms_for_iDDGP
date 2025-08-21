@@ -258,7 +258,7 @@ dcinputfile *dcInputFile_2_dcDataVector(const char *filename) {
 }
 /* *********************************************************************************** */
 /**
- * @brief Reads and parses a 11-line structured input file with key: value format.
+ * @brief Reads and parses a 12-line structured input file with key: value format.
  *
  * Each line of the file is expected to follow the format:
  *   <field description>: <value>
@@ -291,7 +291,7 @@ void read_input_file(const char *filename, char **structure_id, char **structure
 	
 	int numLines = num_lines_file(filename);
 	if (numLines != 12) {
-		fprintf(stderr, "Error: input file must contain exactly 11 lines (found %d).\n", numLines);
+		fprintf(stderr, "Error: input file must contain exactly 12 lines (found %d).\n", numLines);
 		fclose(fp);
 		exit(EXIT_FAILURE);
 	}
@@ -443,6 +443,59 @@ void save_protein_model_PDBformat(const char filename[], proteinstructure *prote
 	
 	fclose(fp);
 }
+
+/* *********************************************************************************** */
+/**
+ * @brief Saves a complete PDB file (HEADER/TITLE/REMARK + one MODEL block + END).
+ *
+ * @param protein          Array of proteinstructure with atom/residue data (length n).
+ * @param n                Number of atoms in the structure.
+ * @param X                Coordinate matrix [n][3] (as double**), where X[i][0][1][2] = (x,y,z).
+ * @param structure_id     PDB structure id.
+ * @param structure_chain  Chain identifier.
+ * @param filename         Output PDB file path.
+ */
+void save_given_protein_PDBformat(proteinstructure *protein, int n, double **X, const char structure_id[], const char structure_chain[], const char filename[]) {
+	
+	// Write HEADER and TITLE block once
+	FILE *fp = fopen(filename, "w");
+	if (!fp) {
+		fprintf(stderr, "Error: could not open file '%s' for writing.\n", filename);
+		exit(EXIT_FAILURE);
+	}
+	
+	// Current date YYYY-MM-DD
+	time_t t = time(NULL);
+	struct tm tm = *localtime(&t);
+	char date[11];
+	snprintf(date, sizeof(date), "%04d-%02d-%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
+	
+	fprintf(fp, "HEADER    %62s   %4s\n", date, structure_id);
+	fprintf(fp, "TITLE     PDB structure\n");
+	fprintf(fp, "REMARK   2\n");
+	fprintf(fp, "REMARK   2 RESOLUTION.    2.00 ANGSTROMS.\n");
+	
+	fclose(fp);  // Done writing header
+	
+	// Update coordinates in the protein structure
+	for (int i = 0; i < n; i++) {
+		protein[i].x = X[i][0];
+		protein[i].y = X[i][1];
+		protein[i].z = X[i][2];
+	}
+	
+	save_protein_model_PDBformat(filename, protein, n, "1", structure_chain);
+	
+	FILE *fp2 = fopen(filename, "a");
+	if (!fp2) {
+		fprintf(stderr, "Error: could not open file '%s' for writing.\n", filename);
+		exit(EXIT_FAILURE);
+	}
+	
+	fprintf(fp2, "END\n");
+	
+	fclose(fp2);	
+}
 /* *********************************************************************************** */
 /**
  * @brief Saves all protein models in PDB format.
@@ -458,7 +511,7 @@ void save_protein_model_PDBformat(const char filename[], proteinstructure *prote
  * @param structure_chain  Chain identifier (e.g., "A").
  * @param filename         Output filename.
  */
-void save_protein_all_models_PDBformat(const char method[], proteinstructure *protein, int n, double ***X, int numSols, const char structure_id[], const char structure_chain[], const char filename[], int is_x0) {
+void save_protein_all_models_PDBformat(const char method[], proteinstructure *protein, int n, double ***X, int numSols, const char structure_id[], const char structure_chain[], const char filename[]) {
 	
 	// Write HEADER and TITLE block once
 	FILE *fp = fopen(filename, "w");
@@ -486,7 +539,7 @@ void save_protein_all_models_PDBformat(const char method[], proteinstructure *pr
 	
 	// Write each model
 	char model[12];
-	for (int k = (1 - is_x0); k < numSols; k++) {
+	for (int k = 1; k < numSols + 1; k++) {
 		// Update coordinates in the protein structure
 		for (int i = 0; i < n; i++) {
 			protein[i].x = X[k][i][0];
@@ -495,7 +548,7 @@ void save_protein_all_models_PDBformat(const char method[], proteinstructure *pr
 		}
 		
 		// Model number as string
-		snprintf(model, sizeof(model), "%d", maxAB_d(k, 1));
+		snprintf(model, sizeof(model), "%d", k);
 		
 		// Save this model to file (append mode)
 		save_protein_model_PDBformat(filename, protein, n, model, structure_chain);

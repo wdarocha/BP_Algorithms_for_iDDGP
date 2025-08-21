@@ -57,7 +57,7 @@ void sample_symmetric_ddgp_interval(int i, double **branches, int *branchNum, ty
 		branches[i][l++] = samplePos[k];
 }
 /* *********************************************************************************** */
-void iBP(int n, double ***discretizationEdges_2, prune_edges_set *pruneEdges_2, int sampleSize, double tolerance, double angularResolution, double timeLimit, int GivenNumOfSols, run_metrics *runMetrics, double **distanceConstraints, int num_dc, double ***allSolutions, double solutionDifferenceThreshold, int referenceSolutionIndex) {
+void iBP(int n, double ***discretizationEdges_2, prune_edges_set *pruneEdges_2, int sampleSize, double tolerance, double angularResolution, double timeLimit, int GivenNumOfSols, run_metrics *runMetrics, double **distanceConstraints, int num_dc, double ***allSolutions, double solutionDifferenceThreshold) {
 	// ---------- Variables initialization ----------
 	time_t startTime, nowWall;
 	clock_t cpuStart, cpuNow;
@@ -109,7 +109,7 @@ void iBP(int n, double ***discretizationEdges_2, prune_edges_set *pruneEdges_2, 
 		}
 		
 		if (i == n) {
-			breakLoop = handle_solution_cycle("iBP", &nosf, &maxMDE, &maxLDE, &minRMSD, &nocs, GivenNumOfSols, Xr, n, allSolutions, distanceConstraints, num_dc, referenceSolutionIndex, solutionDifferenceThreshold, &i, exploredVertex, branches, branchNum, twoSampleSize);
+			breakLoop = handle_solution_cycle("iBP", &nosf, &maxMDE, &maxLDE, &minRMSD, &nocs, GivenNumOfSols, Xr, n, allSolutions, distanceConstraints, num_dc, solutionDifferenceThreshold, &i, exploredVertex, branches, branchNum, twoSampleSize);
 			if(breakLoop)
 				break;
 		}
