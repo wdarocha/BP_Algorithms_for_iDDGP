@@ -8,9 +8,9 @@ Preprint available at: https://arxiv.org/abs/2508.09143
 
 This project implements the **Branch-and-Prune algorithms** for the **Interval Discretizable Distance Geometry Problem (iDDGP)**, with three variants:
 
-- **iBP**  -- interval Branch-and-Prune   
-- **iABP** -- interval Angular Branch-and-Prune  
-- **iTBP** -- interval Torsion-angle Branch-and-Prune
+- **iBP**  – interval Branch-and-Prune   
+- **iABP** – interval Angular Branch-and-Prune  
+- **iTBP** – interval Torsion-angle Branch-and-Prune
 
 The algorithms embed molecular structures from interval distance data and torsional constraints, producing multiple possible conformations under geometric feasibility rules.
 
