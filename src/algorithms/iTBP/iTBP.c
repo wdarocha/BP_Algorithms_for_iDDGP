@@ -760,7 +760,7 @@ void iTBP(int n, double ***discretizationEdges_2, prune_edges_set *pruneEdges_2,
 	
 	referential_x1_x2_x3(Xr, discretizationEdges_2);
 	
-	double angularResolution0 = 1.0 * CF_DEG2RAD;
+	double angularResolution0 = 0.5 * CF_DEG2RAD;
 		
 	cpuStart = clock();
 	startTime = time(NULL);

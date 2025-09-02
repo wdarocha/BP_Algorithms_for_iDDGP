@@ -44,7 +44,7 @@ int main(int argc, char *argv[]){
 	double solutionDifferenceThreshold = 0.0;
 	
 	read_input_file(fname, &structure_id, &structure_chain, &method, &instanceFile, &cliquesFile, &initialStructureFile, &timeLimit, &distanceResolution, &angularResolution, &numOfSols, &sampleSize, &solutionDifferenceThreshold);
-		
+	
 	char aux_str[MAX_LINE_LENGTH];
 	char filepath[MAX_LINE_LENGTH];
 	

@@ -1,7 +1,7 @@
 # BP_Algorithms_for_iDDGP
 
 This code was developed based on the article:
-"A Novel Branch-and-Prune Algorithmic Framework for the 3D Interval Discretizable Distance Geometry Problem: An Approach Based on Torsion Angles of Molecular Structures"
+"An Angle-Based Algorithmic Framework for the Interval Discretizable Distance Geometry Problem"
 Preprint available at: https://arxiv.org/abs/2508.09143
 
 ---
@@ -64,7 +64,7 @@ Run the program with:
 Example:
 
 ```bash
-./build/bin/main dataset/1A11/input.txt results/
+./build/bin/main dataset/1TOS_input_file.txt results/
 ```
 
 ### Input File Format
@@ -168,7 +168,7 @@ Generates:
 
 ```
 results/
- ├── 1TOS_0.pdb        # reference structure
+ ├── 1TOS_A.pdb        # reference structure
  ├── 1TOS.pdb          # embedded conformations
  └── results.txt       # metrics summary
 ```
@@ -191,15 +191,15 @@ minimum RMSD = 0.23850656
 
 If this code is useful in your research, please cite the preprint below (also available via the **“Cite this repository”** button on GitHub thanks to the included `CITATION.cff`):
 
-**W. A. A. da Rocha, C. Lavor, L. Liberti, L. de Melo Costa, L. D. Secchin, T. E. Malliavin.**  
-*A Novel Branch-and-Prune Algorithmic Framework for the 3D Interval Discretizable Distance Geometry Problem: An Approach Based on Torsion Angles of Molecular Structures.*  
+**W. da Rocha, C. Lavor, L. Liberti, L. de Melo Costa, L. D. Secchin, T. E. Malliavin.**  
+*An Angle-Based Algorithmic Framework for the Interval Discretizable Distance Geometry Problem.*  
 **arXiv:2508.09143**, 2025.  
 https://arxiv.org/abs/2508.09143
 
 ### BibTeX
 ```bibtex
-@misc{darocha2025novelbranchandprunealgorithmicframework,
-  title        = {A Novel Branch-and-Prune Algorithmic Framework for the 3D Interval Discretizable Distance Geometry Problem: An Approach Based on Torsion Angles of Molecular Structures},
+@misc{darocha2025,
+  title        = {An Angle-Based Algorithmic Framework for the Interval Discretizable Distance Geometry Problem},
   author       = {Wagner A. A. da Rocha and Carlile Lavor and Leo Liberti and Leticia de Melo Costa and Leonardo D. Secchin and Therese E. Malliavin},
   year         = {2025},
   eprint       = {2508.09143},
@@ -222,3 +222,6 @@ This repository is licensed under the [MIT License](./LICENSE).
 
 Developed and maintained by [Wagner Alan Aparecido da Rocha](https://github.com/wdarocha).  
 
+## 🙏 Acknowledgments
+
+Special thanks to [Leonardo D. Secchin](https://github.com/leonardosecchin) for the valuable support provided during the development of the code.

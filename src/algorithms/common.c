@@ -82,37 +82,45 @@ void referential_x1_x2_x3(double **X, double ***discretizationEdges_2) {
  */
 int handle_solution_cycle(const char *method, long int *nosf, double *maxMDE, double *maxLDE, double *minRMSD, int *nocs, int GivenNumOfSols, double **Xr, int n, double ***allSolutions, double **distanceConstraints, int num_dc, double solutionDifferenceThreshold, int *i, int *exploredVertex, double **branches, int *branchNum, int twoSampleSize) {
 	
-	int k;
-	double mde, lde, rmsd;
-	
 	(*nosf)++;
 	
-	// First solution: store directly
-	if ((*nosf) == 1) {
+	int isDistinct = 0; 		// whether we will append to allSolutions[++(*nocs)]
+	double rmsd_to_ref = 0.0; 	// RMSD w.r.t. reference (allSolutions[0])
+	double mde, lde;
+	
+	// Case A: no stored distinct solutions yet -- accept the first by convention
+	if (*nocs == 0) {
+		// Initialize the reference only if still unset
 		if(frobenius_norm(allSolutions[0], n, 3) < MYZERO)
-			mat_e_mat_lf(allSolutions[0], Xr, n, 3);
-			
-		mat_e_mat_lf(allSolutions[++(*nocs)], Xr, n, 3);
+			mat_e_mat_lf(allSolutions[0], Xr, n, 3); // set reference
+		else
+		// Reference already set: compute RMSD from reference solution
+			rmsd_to_ref = compute_rmsd(allSolutions[0], Xr, n);
+    		
+		isDistinct = 1;	// First solution: store directly
+	}
+	// Case B: there are already stored distinct solutions -- test distinctness
+	else {
+		// Compute RMSD from reference solution
+		rmsd_to_ref = compute_rmsd(allSolutions[0], Xr, n);
+		
+		isDistinct = 1;
+		// Test if candidate is sufficiently distinct
+		for (int k = 1; k <= (*nocs); k++) {
+			double rmsd = compute_rmsd(allSolutions[k], Xr, n);
+			if (rmsd < solutionDifferenceThreshold) {
+				isDistinct = 0;
+				break;  // early exit: not distinct with at least one solution
+			}
+		}
 	}
 	
-	// Compute RMSD from reference solution
-	rmsd = compute_rmsd(allSolutions[0], Xr, n);
-	
-	// Update max/min metrics
+	// Update global metrics (all candidates)
 	compute_mde_and_lde(Xr, distanceConstraints, num_dc, &mde, &lde);
 	(*maxMDE)  = maxAB_lf((*maxMDE), mde);
 	(*maxLDE)  = maxAB_lf((*maxLDE), lde);
-	(*minRMSD) = minAB_lf((*minRMSD), rmsd);
-	
-	// Test if candidate is sufficiently distinct
-	int isDistinct = 1;
-	for (k = 1; k <= (*nocs); k++) {
-		rmsd = compute_rmsd(allSolutions[k], Xr, n);
-		if (rmsd < solutionDifferenceThreshold) {
-			isDistinct = 0;
-			break;  // No need to check further
-		}
-	}
+	(*minRMSD) = minAB_lf((*minRMSD), rmsd_to_ref);
+		
 	// If distinct enough, store new solution
 	if (isDistinct)
 		mat_e_mat_lf(allSolutions[++(*nocs)], Xr, n, 3);
